@@ -18,13 +18,12 @@ class ArrayStringQueue extends Queue[String] {
     this
   }
 
-  def get(): String = {
-    var result = "Empty"
+  def get(): Option[String] = {
     if (!this.isEmpty()) {
       val item = this._data(this._headIndex)
       this._headIndex = (this._headIndex + 1) % MAX_NUM_OF_ITEMS
-      result = item
+      Some(item)
     }
-    result
+    else None
   }
 }

@@ -1,16 +1,16 @@
 package agoda.training.lazyVector
 
-class LazyVector(val vector: (Int, Int, Int)) {
+class LazyVector(val vector: Seq[Int]) {
   lazy val x = this.calcX()
   lazy val y = this.calcY()
   lazy val z = this.calcZ()
 
-  private def calcX(): (Int, Int, Int) = {
-    (this.vector._1 * this.vector._1, this.vector._2 * this.vector._2, this.vector._3 * this.vector._3)
+  private def calcX()= {
+    vector.map(p => p*p)
   }
 
   private def calcY(): Int = {
-    this.x._1 + this.x._2 + this.x._3
+    x.sum
   }
 
   private def calcZ(): Double = {

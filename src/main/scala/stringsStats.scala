@@ -3,45 +3,16 @@ package agoda.training.SringsList
 object stringsStats {
   import scala.collection.mutable.Map
 
-  private var longestWord = ""
-  private var mostCommonWord: Option[String] = Option.empty
-  private var mostCommonLetter: Option[Char] = Option.empty
-  private val wordsMap: Map[String, Int] = Map.empty
-  private val lettersMap: Map[Char, Int] = Map.empty
-  var wordsLettersMap: Map[Char, Set[String]] = Map.empty
+  def getStatsInfo(input: String): (String, String, Char, Map[String, List[String]]) = {
 
-  private def adjustMap[T](key: T, keyTop: Option[T], map: Map[T, Int]): T = {
-    var number = 1
-    if (map contains key ) number = map(key) + 1
-    map += (key -> number)
+    val list = input split " " toList
+    val lettersList = input.split("").filter(_ != "").filter(_ != " ").toList
+    (
+      (list sortWith (_.length > _.length))(0),
+      list.sortWith((a: String, b: String) => { list.filter(_ == a).length > list.filter(_ == b).length })(0),
+      lettersList.sortWith((a: String, b: String) => { lettersList.filter(_ == a).length > lettersList.filter(_ == b).length })(0)(0),
+      lettersList.map((s: String) => (s, list.filter(_ contains s))).foldLeft(Map[String, List[String]]()) { (m, s) => m + (s._1 -> s._2) }
+    )
 
-    var result = key
-    if (!keyTop.isEmpty && (number < map(keyTop get))) result = keyTop.get
-    result
-  }
-
-  private def checkLongestWord(word: String): Unit = {
-    if (word.length > this.longestWord.length) {
-      this.longestWord = word
-    }
-  }
-
-  private def agjustLettersMap(word: String): Unit = {
-    (0 until word.length).map(n => word.charAt(n)).foreach((c: Char) => {
-      this.mostCommonLetter = Some(this.adjustMap[Char](c, mostCommonLetter, lettersMap))
-      if (!this.wordsLettersMap.contains(c)) wordsLettersMap(c) = Set(word)
-      wordsLettersMap(c) += word
-    })
-  }
-
-  def getStatsInfo(input: String): (String, String, Char) = {
-
-    input split " " foreach((s: String) => {
-      this.checkLongestWord(s)
-      this.mostCommonWord = Some(this.adjustMap[String](s, mostCommonWord, wordsMap))
-      this.agjustLettersMap(s)
-    })
-
-    (this.longestWord, this.mostCommonWord.get, this.mostCommonLetter.get)
   }
 }

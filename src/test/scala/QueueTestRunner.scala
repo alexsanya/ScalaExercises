@@ -35,16 +35,16 @@ class QueueTestRunner extends FunSuite with BeforeAndAfter {
     queue put "first"
     queue put "second"
     queue put "third"
-    assert(queue.get() == "first")
-    assert(queue.get() == "second")
-    assert(queue.get() == "third")
+    assert(queue.get() == Some("first"))
+    assert(queue.get() == Some("second"))
+    assert(queue.get() == Some("third"))
   }
 
   test("Should reverse input items") {
     val reversableQueue = new ArrayStringQueue() with Reversable
 
     reversableQueue put "abc"
-    assert(reversableQueue.get() === "cba")
+    assert(reversableQueue.get() == Some("cba"))
   }
 }
 

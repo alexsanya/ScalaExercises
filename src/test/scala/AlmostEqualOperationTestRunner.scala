@@ -12,7 +12,7 @@ class AlmostEqualOperationTestRunner extends FunSuite {
   }
 
   test("Should support custom precision") {
-    implicit val precision = 0.5
+    implicit val precision = EqualEpsilon(0.5)
     assert((1.1 ~= 1.3) == true)
   }
 }

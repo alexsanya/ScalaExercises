@@ -1,8 +1,10 @@
 package agoda.training.almostEqual
 
 object almostEqualOperation {
-  implicit val precision = 0.1
-  implicit final class ComparableDouble(val d: Double)(implicit precision: Double) {
-    def ~=(other: Double) = Math.abs(d - other) <= precision
+  case class EqualEpsilon(epsilon: Double)
+
+  implicit val precision = EqualEpsilon(0.1)
+  implicit final class ComparableDouble(val d: Double)(implicit precision: EqualEpsilon) {
+    def ~=(other: Double) = Math.abs(d - other) <= precision.epsilon
   }
 }
