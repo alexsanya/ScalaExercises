@@ -2,23 +2,24 @@ package agoda.training.sets
 
 trait IntSet {
   def incl(x: Int): IntSet
-  def contains(x: Int): Boolean
-  def union(s: IntSet): IntSet =
-    new UnitedSet(this, s)
-  def intersection(s: IntSet) =
-    new IntersectedSet(this, s)
-  def exclude(x: Int) =
-    new ExcludedSet(x, this)
   def isEmpty(): Boolean
+  def contains(x: Int): Boolean
+  def exclude(x: Int): IntSet
+  def union(x: IntSet): IntSet
+  def intersection(x: IntSet): IntSet
 }
 
 class EmptySet extends IntSet {
   def contains(x: Int): Boolean = false
   def isEmpty(): Boolean = true
   def incl(x: Int): IntSet = new NonEmptySet(x, new EmptySet, new EmptySet)
+  def union(x: IntSet) = x
+  def exclude(x: Int): IntSet = this
+  def intersection(x: IntSet): IntSet = new EmptySet
 }
 
 class NonEmptySet(elem: Int, left: IntSet, right: IntSet) extends IntSet {
+  def isEmpty(): Boolean = false
   def contains(x: Int): Boolean =
     if (x < elem) left contains x
     else if (x > elem) right contains x
@@ -27,29 +28,18 @@ class NonEmptySet(elem: Int, left: IntSet, right: IntSet) extends IntSet {
     if (x < elem) new NonEmptySet(elem, left incl x, right)
     else if (x > elem) new NonEmptySet(elem, left, right incl x)
     else this
-  def isEmpty(): Boolean = false
+  def exclude(x: Int): IntSet =
+    if (x == elem) this.left.union(this.right)
+    else this.left.exclude(x).union(this.right.exclude(x))
+  def union(x: IntSet): IntSet = x match {
+    case _: EmptySet => this
+    case s: NonEmptySet => s.incl(this.elem).union(this.left).union(this.right)
+  }
+  def intersection(x: IntSet): IntSet = x match {
+    case _: EmptySet => new EmptySet
+    case s: NonEmptySet =>
+      if (s.contains(this.elem)) new NonEmptySet(this.elem, new EmptySet, new EmptySet).union(this.exclude(this.elem).intersection(s.exclude(this.elem)))
+      else this.exclude(this.elem).intersection(s)
+  }
 }
 
-class UnitedSet(left: IntSet, right: IntSet) extends IntSet {
-  def contains(x: Int): Boolean =
-    left.contains(x) || right.contains(x)
-  def incl(x: Int): IntSet =
-    new UnitedSet(left, right incl x)
-  def isEmpty(): Boolean = false
-}
-
-class IntersectedSet(left: IntSet, right: IntSet) extends IntSet {
-  def contains(x: Int): Boolean =
-    left.contains(x) && right.contains(x)
-  def incl(x: Int): IntSet =
-    new UnitedSet(left incl x, right incl x)
-  def isEmpty(): Boolean = false
-}
-
-class ExcludedSet(excl: Int, s: IntSet) extends IntSet {
-  def contains(x: Int): Boolean =
-    s.contains(x) && ( x != excl)
-  def incl(x: Int): IntSet =
-    s.incl(x)
-  def isEmpty(): Boolean = false
-}

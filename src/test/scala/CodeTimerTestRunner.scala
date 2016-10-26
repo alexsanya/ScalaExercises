@@ -10,6 +10,7 @@ class CodeTimerTestRunner extends FunSuite {
       Thread.sleep(DURATION_MS)
     }
 
+
     assert(Math.abs(time / 1e3 - DURATION_MS) < DELTA_MS)
   }
 
